@@ -1,7 +1,8 @@
 const ApiError = require('../error/ApiError.js')
 const { User } = require("../models/models.js");
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { condition } = require('sequelize');
 
 const generateJwt = (id, email, username, role) => {
     return jwt.sign(
@@ -17,9 +18,13 @@ class UserController {
             if ( !email || !password || !username) {
                 return next(ApiError.badRequest('Некорректный email или password'))
             } 
-            const candidate = await User.findAll({where: {email, username}})
-            if (candidate) {
+            const candidate1 = await User.findOne({where: {email}})
+            if (candidate1) {
                 return next(ApiError.badRequest('Пользователь с таким email уже существует'))
+            }
+            const candidate2 = await User.findOne({where: {username}})
+            if (candidate2) {
+                return next(ApiError.badRequest('Пользователь с таким login уже существует'))
             }
             const hashPassword = await bcrypt.hash(password, 5)
             const user = await User.create({email, username, name, password: hashPassword})

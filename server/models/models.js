@@ -18,7 +18,7 @@ const Post = sequelize.define( 'post', {
 // (async () => {
 //   await User.sync({ force: true });
 //   // Code here
-// })(); 
+// })();  
  
 User.hasMany(Post)
 Post.belongsTo(User)
